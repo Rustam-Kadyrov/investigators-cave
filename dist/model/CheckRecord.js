@@ -14,25 +14,23 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var Id_1 = require("./Id");
-var Project = /** @class */ (function (_super) {
-    __extends(Project, _super);
-    function Project(title, description, known, unknown, checkList, tags, freeDrawPlanes) {
-        if (known === void 0) { known = []; }
-        if (unknown === void 0) { unknown = []; }
-        if (checkList === void 0) { checkList = []; }
-        if (tags === void 0) { tags = []; }
-        if (freeDrawPlanes === void 0) { freeDrawPlanes = []; }
+var CheckRecord = /** @class */ (function (_super) {
+    __extends(CheckRecord, _super);
+    function CheckRecord(unknownUuid, status) {
+        if (status === void 0) { status = CheckResult.NOT_SET; }
         var _this = _super.call(this) || this;
-        _this.title = title;
-        _this.description = description;
-        _this.known = known;
-        _this.unknown = unknown;
-        _this.checkList = checkList;
-        _this.tags = tags;
-        _this.freeDrawPlanes = freeDrawPlanes;
+        _this.unknownUuid = unknownUuid;
+        _this.status = status;
         return _this;
     }
-    return Project;
+    return CheckRecord;
 }(Id_1.Id));
-exports.Project = Project;
-//# sourceMappingURL=Project.js.map
+exports.CheckRecord = CheckRecord;
+var CheckResult;
+(function (CheckResult) {
+    CheckResult[CheckResult["NOT_SET"] = 0] = "NOT_SET";
+    CheckResult[CheckResult["LEARNED"] = 1] = "LEARNED";
+    CheckResult[CheckResult["NO_MATTER"] = 2] = "NO_MATTER";
+    CheckResult[CheckResult["TOO_COMPLICATED"] = 3] = "TOO_COMPLICATED";
+})(CheckResult = exports.CheckResult || (exports.CheckResult = {}));
+//# sourceMappingURL=CheckRecord.js.map

@@ -14,25 +14,14 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var Id_1 = require("./Id");
-var Project = /** @class */ (function (_super) {
-    __extends(Project, _super);
-    function Project(title, description, known, unknown, checkList, tags, freeDrawPlanes) {
-        if (known === void 0) { known = []; }
-        if (unknown === void 0) { unknown = []; }
-        if (checkList === void 0) { checkList = []; }
-        if (tags === void 0) { tags = []; }
-        if (freeDrawPlanes === void 0) { freeDrawPlanes = []; }
+var TagRecord = /** @class */ (function (_super) {
+    __extends(TagRecord, _super);
+    function TagRecord(label) {
         var _this = _super.call(this) || this;
-        _this.title = title;
-        _this.description = description;
-        _this.known = known;
-        _this.unknown = unknown;
-        _this.checkList = checkList;
-        _this.tags = tags;
-        _this.freeDrawPlanes = freeDrawPlanes;
+        _this.label = label;
         return _this;
     }
-    return Project;
+    return TagRecord;
 }(Id_1.Id));
-exports.Project = Project;
-//# sourceMappingURL=Project.js.map
+exports.TagRecord = TagRecord;
+//# sourceMappingURL=TagRecord.js.map
