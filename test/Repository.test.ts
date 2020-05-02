@@ -23,18 +23,20 @@ describe('RepositoryTagRecords', function() {
     });
 
     rep.save(new TagRecord("Tag1"), function(newDoc: TagRecord) {
-      expect(newDoc.uuid).is.not.empty;
+      expect(newDoc._id).is.not.empty;
+      expect(newDoc._id.length).equal(16);
       expect(newDoc.label).equal("Tag1");
     });
     rep.save(new TagRecord("Tag2"), function(newDoc: any) {
-      expect(newDoc.uuid).is.not.empty;
+      expect(newDoc._id).is.not.empty;
+      expect(newDoc._id.length).equal(16);
       expect(newDoc.label).equal("Tag2");
     });
 
     rep.findAll(function(docs: TagRecord[]) {
       expect(docs.length).equal(2);
-      expect(docs[0].label).is.equal("Tag1");
-      expect(docs[1].label).is.equal("Tag2");
+      expect(docs[0].label).is.oneOf(["Tag1", "Tag2"]);
+      expect(docs[1].label).is.oneOf(["Tag1", "Tag2"].filter(f => f != docs[0].label));
     });
   })
 

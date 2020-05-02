@@ -11,7 +11,7 @@ describe('Project', function() {
   it('constructor_ShouldInitDefaults_WhenDefaultsNotSet', function() {
     let result = new Project("Title", "Description");
 
-    expect(result.uuid).is.not.empty;
+    expect(result._id).is.undefined;
     expect(result.title).equal("Title");
     expect(result.description).equal("Description");
     expect(result.known).is.empty;
@@ -28,7 +28,7 @@ describe('Project', function() {
       "Description",
       [new KnownRecord("fact1"), new KnownRecord("fact2")],
       [unknownRecord],
-      [new CheckRecord(unknownRecord.uuid, CheckResult.NO_MATTER)],
+      [new CheckRecord(unknownRecord._id, CheckResult.NO_MATTER)],
       [new TagRecord("tag1"), new TagRecord("tag2")],
       [new FreeDrawPayload(), new FreeDrawPayload(), new FreeDrawPayload()]
     );
