@@ -23,7 +23,7 @@ describe('RepositoryTagRecords', function() {
       });
 
       rep.save(new TagRecord("Tag1"), function(newDoc: TagRecord) {
-        expect(newDoc._id).is.match(/^[0-9a-zA-Z]{16}$/);
+        expect(newDoc._id).is.match(/^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/);
         expect(newDoc.label).equal("Tag1");
       });
 
@@ -39,7 +39,7 @@ describe('RepositoryTagRecords', function() {
 
       for (let i = 0; i < 10; i++) {
         rep.save(new TagRecord("Tag" + i), function(newDoc: TagRecord) {
-          expect(newDoc._id).is.match(/^[0-9a-zA-Z]{16}$/);
+          expect(newDoc._id).is.match(/^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/);
           expect(newDoc.label).equal("Tag" + i);
         });
       }
@@ -52,7 +52,7 @@ describe('RepositoryTagRecords', function() {
   })
 
   describe("findById", function() {
-    it('findById_ShouldFindParticularEntity_WhenOthersPresented', function() {
+    it('ShouldFindParticularEntity_WhenOthersPresented', function() {
 
       let storedItems: TagRecord[] = [];
       for (let i = 0; i < 10; i++) {

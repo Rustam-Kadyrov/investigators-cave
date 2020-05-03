@@ -5,6 +5,14 @@ import { CheckRecord } from "./CheckRecord";
 import { FreeDrawPayload } from "./FreeDrawPayload";
 import { TagRecord } from "./TagRecord";
 
+/**
+ * class Project
+ * The main data class that representes investigation project
+ *
+ * author: Rustam Kadyrov, 2020
+ * github: https://github.com/Rustam-Kadyrov
+ *
+ */
 export class Project extends Id {
 
   constructor(

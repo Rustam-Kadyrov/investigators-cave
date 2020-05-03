@@ -4,6 +4,18 @@ import * as os from "os";
 
 const homeDir: string = os.homedir();
 
+/**
+ * class ConnectionImpl
+ * Incapsulates nedb Datastore using interface.
+ * Connection can reference to in-memory database or to a file storage
+ * To build connection use static methods
+ *      for in-memory mode:   ConnectionImpl.getConnectionInMemory
+ *      for file mode:        ConnectionImpl.getConnectionPersisted
+ *
+ * author: Rustam Kadyrov, 2020
+ * github: https://github.com/Rustam-Kadyrov
+ *
+ */
 export class ConnectionImpl implements Connection {
 
   private db: any;

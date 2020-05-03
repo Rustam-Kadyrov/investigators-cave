@@ -1,5 +1,12 @@
 import { Id } from "./Id";
 
+/**
+ * class CheckRecord
+ *
+ * author: Rustam Kadyrov, 2020
+ * github: https://github.com/Rustam-Kadyrov
+ *
+ */
 export class CheckRecord extends Id {
 
   constructor(

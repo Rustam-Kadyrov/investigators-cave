@@ -1,15 +1,18 @@
 # Investigator's Cave
 
-Very first comment.
-To initialize project after checkout use:
+Application that helps to focus on investigation something new keeping needed information handy. It has simple interface and build on top of NodeJS + TypeScript + Electron bundle.
+
+Implemented skeleton, data model, local database and tests.
+
+***
+After checkout intialize project:
 ```
 npm install
 ```
-To run all tests:
+run all tests with coverage:
 ```
-npm run test
+npm run coverage
 ```
-To start application:
-```
-npm start
-```
+
+***
+Rustam Kadyrov, 2020
