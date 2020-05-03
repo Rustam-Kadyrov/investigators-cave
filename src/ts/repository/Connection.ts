@@ -9,6 +9,16 @@ export class ConnectionImpl implements Connection {
   private db: any;
   private dbFolder: string;
 
+  static getConnectionPersisted(
+    dbFolderName: string,
+    dbFileName: string): Connection {
+    return new ConnectionImpl(dbFolderName, dbFileName);
+  }
+
+  static getConnectionInMemory() {
+    return new ConnectionImpl("", "", true);
+  }
+
   constructor(
     private dbFolderName: string = "investigators_cave",
     private dbFileName: string = "projects.db",
