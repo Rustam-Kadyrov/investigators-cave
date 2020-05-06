@@ -1,4 +1,4 @@
-import { ConnectionImpl } from "./Connection"
+import { Connection } from "./Connection"
 import { Id } from "../model/Id";
 
 /**
@@ -11,7 +11,7 @@ import { Id } from "../model/Id";
  */
 export class RepositoryImpl<T extends Id> implements Repository<T> {
   constructor(
-    private connection: ConnectionImpl
+    private connection: Connection
   ) {
     this.connection.connect();
   }

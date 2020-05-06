@@ -68,7 +68,7 @@ export class ConnectionImpl implements Connection {
   }
 }
 
-interface Connection {
+export interface Connection {
 
   connect(): string;
   getDb(): any;
