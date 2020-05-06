@@ -12,79 +12,93 @@ import { Id } from "../model/Id";
 export class RepositoryImpl<T extends Id> implements Repository<T> {
   constructor(
     private connection: ConnectionImpl
-  ) { }
-
-  save(entity: T, successCallback: Function, errorCallback: Function = function() { }) {
+  ) {
     this.connection.connect();
-    this.connection.getDb().insert(entity, function(err: any, newDoc: any) {
-      if (err) {
-        errorCallback(err);
-      } else {
-        successCallback(newDoc);
-      }
+  }
+
+  save(entity: T): Promise<T> {
+    return new Promise<T>((resolve: Function, reject: Function) => {
+      this.connection.getDb().insert(entity, function(err: any, newDoc: T) {
+        if (err) {
+          return reject(err);
+        }
+        resolve(newDoc);
+      });
     });
   }
 
-  findById(id: string, successCallback: Function, errorCallback: Function = function() { }) {
-    this.findByQuery({ _id: id }, successCallback, errorCallback);
+  updateById(id: string, newFields: any, options: any = {}): Promise<number> {
+    return this.update({ _id: id }, newFields, options);
   }
 
-  findAll(successCallback: Function, errorCallback: Function = function() { }): void {
-    this.findByQuery({}, successCallback, errorCallback);
+  private update(query: any, newFields: any, options: any = {}): Promise<number> {
+    return new Promise<number>((resolve: Function, reject: Function) => {
+      this.connection.getDb().update(query, newFields, options, function(err: any, numUpdated: number) {
+        if (err) {
+          return reject(err);
+        }
+        resolve(numUpdated);
+      });
+    });
   }
 
-  findByQuery(query: any, successCallback: Function, errorCallback: Function = function() { }) {
-    this.findByQueryWithOptions(query, new QueryOptions(), successCallback, errorCallback);
+  findById(id: string, options: SortPagination = new SortPagination()): Promise<T[]> {
+    return this.findByQuery({ _id: id }, options);
   }
 
-  findByQueryWithOptions(query: any, options: QueryOptions, successCallback: Function, errorCallback: Function = function() { }) {
-    this.connection.connect();
-    var func = function(err: any, docs: T[]) {
-      if (err) {
-        errorCallback(err);
-      } else {
-        successCallback(docs);
+  findAll(options: SortPagination = new SortPagination()): Promise<T[]> {
+    return this.findByQuery({}, options);
+  }
+
+  findByQuery(query: any, sortPagination: SortPagination = new SortPagination()): Promise<T[]> {
+    return this.findByQueryProjection(query, {}, sortPagination);
+  }
+
+  //return type any because options has projection property which can define
+  //custom fields set to resulting object thus result may differ from T
+  findByQueryProjection(query: any, projection: any, sortPagination: SortPagination = new SortPagination()): Promise<any[]> {
+    return new Promise<any[]>((resolve: Function, reject: Function) => {
+      let queryBuilder = this.connection.getDb()
+        .find(query, projection);
+
+      if (sortPagination.sort) {
+        queryBuilder.sort(sortPagination.sort);
       }
-    };
+      if (sortPagination.skip) {
+        queryBuilder.skip(sortPagination.skip);
+      }
+      if (sortPagination.limit) {
+        queryBuilder.limit(sortPagination.limit);
+      }
 
-    let queryBuilder = this.connection.getDb()
-      .find(query, options.projection);
-
-    if (options.sort) {
-      queryBuilder.sort(options.sort);
-    }
-    if (options.skip) {
-      queryBuilder.skip(options.skip);
-    }
-    if (options.limit) {
-      queryBuilder.limit(options.limit);
-    }
-
-    queryBuilder.exec(func);
+      queryBuilder.exec(function(err: any, docs: T[]) {
+        if (err) {
+          return reject(err);
+        }
+        resolve(docs);
+      });
+    });
   }
 }
 
 interface Repository<T extends Id> {
 
-  save(entity: T, successCallback: Function, errorCallback: Function): void;
+  save(entity: T): Promise<T>;
 
-  findById(id: string, successCallback: Function, errorCallback: Function): void;
+  updateById(id: string, newFields: any, options: any): Promise<number>;
 
-  findAll(succCallbak: Function): void;
+  findById(id: string, options: SortPagination): Promise<T[]>;
 
-  findByQuery(query: any, successCallback: Function, errorCallback: Function): void;
+  findAll(options: SortPagination): Promise<T[]>;
 
-  findByQueryWithOptions(query: any, options: QueryOptions, successCallback: Function, errorCallback: Function): void;
+  findByQuery(query: any, options: SortPagination): Promise<T[]>;
+
+  findByQueryProjection(query: any, projection: any, sortPagination: SortPagination): Promise<any[]>;
 }
 
-export class QueryOptions {
-
-  static byProjection(projection: any): QueryOptions {
-    return new QueryOptions(projection);
-  }
+export class SortPagination {
 
   constructor(
-    public projection: any = null,
     public sort: any = null,
     public skip: number = 0,
     public limit: number = 20

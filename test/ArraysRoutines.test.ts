@@ -21,15 +21,15 @@ describe('ArraysRoutines', function() {
       let resultRemove2 = ArraysRoutines.removeItemFromListByUuid(arr, item2._id);
       let resultRemove3 = ArraysRoutines.removeItemFromListByUuid(arr, item3._id);
 
-      expect(resultRemove1.length).equal(2);
+      expect(resultRemove1).to.have.length(2);
       expect(resultRemove1[0]._id).equal(item2._id);
       expect(resultRemove1[1]._id).equal(item3._id);
 
-      expect(resultRemove2.length).equal(2);
+      expect(resultRemove2).to.have.length(2);
       expect(resultRemove2[0]._id).equal(item1._id);
       expect(resultRemove2[1]._id).equal(item3._id);
 
-      expect(resultRemove3.length).equal(2);
+      expect(resultRemove3).to.have.length(2);
       expect(resultRemove3[0]._id).equal(item1._id);
       expect(resultRemove3[1]._id).equal(item2._id);
     })

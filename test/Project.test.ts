@@ -11,7 +11,7 @@ describe('Project', function() {
   describe("constructor", function() {
     it('ShouldInitDefaults_WhenDefaultsNotSet', function() {
       let result = new Project("Title", "Description");
-      expect(result._id).is.match(/^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/);
+      expect(result._id).to.match(/^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/);
       expect(result.title).equal("Title");
       expect(result.description).equal("Description");
       expect(result.known).is.empty;
@@ -35,12 +35,12 @@ describe('Project', function() {
 
       expect(result.title).equal("Title");
       expect(result.description).equal("Description");
-      expect(result.known.length).equal(2);
+      expect(result.known).to.have.length(2);
       expect(result.known[0].label).equal("fact1");
       expect(result.known[1].label).equal("fact2");
       expect(result.unknown.length).equal(1)
       expect(result.unknown[0].label).is.equal("Some info1")
-      expect(result.checkList.length).equal(1);
+      expect(result.checkList).to.have.length(1);
       expect(result.checkList[0].status).is.equal(CheckResult.NO_MATTER);
       expect(result.tags.length).equal(2);
       expect(result.tags[0].label).equal("tag1");

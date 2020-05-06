@@ -17,107 +17,91 @@ describe('RepositoryTagRecords', function() {
   });
 
   describe("save", function() {
-    it('ShouldSave_WhenCorrectEntity', function() {
-      rep.findAll(function(docs: TagRecord[]) {
-        expect(docs.length).equal(0);
-      });
+    it('ShouldSave_WhenCorrectEntity', async () => {
+      let itemsBefore = await rep.findAll();
 
-      rep.save(new TagRecord("Tag1"), function(newDoc: TagRecord) {
-        expect(newDoc._id).is.match(/^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/);
-        expect(newDoc.label).equal("Tag1");
-      });
+      let tagStored = await rep.save(new TagRecord("Tag1"));
 
-      rep.findAll(function(docs: TagRecord[]) {
-        expect(docs.length).equal(1);
-      });
+      let itemsAfter = await rep.findAll();
+
+      expect(itemsBefore).to.have.length(0);
+      expect(itemsAfter).to.have.length(1);
+      expect(tagStored._id).to.match(/^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/);
+      expect(tagStored.label).to.equal("Tag1");
     })
 
-    it('ShouldSave10Times_When10TimesSaved', function() {
-      rep.findAll(function(docs: TagRecord[]) {
-        expect(docs.length).equal(0);
-      });
+    it('ShouldSave10Times_When10TimesSaved', async () => {
+      let itemsBefore = await rep.findAll();
 
+      let promises: Promise<TagRecord>[] = [];
       for (let i = 0; i < 10; i++) {
-        rep.save(new TagRecord("Tag" + i), function(newDoc: TagRecord) {
-          expect(newDoc._id).is.match(/^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/);
-          expect(newDoc.label).equal("Tag" + i);
-        });
+        promises.push(rep.save(new TagRecord("Tag" + i)));
       }
+      let results = await Promise.all(promises);
 
-      rep.findAll(function(docs: TagRecord[]) {
-        expect(docs.length).equal(10);
-      });
+      let itemsAfter = await rep.findAll();
+
+      expect(itemsBefore).to.have.length(0);
+      expect(itemsAfter).to.have.length(10);
+      expect(results).to.be.an('array').to.have.length(10);
+      for (let i = 0; i < 10; i++) {
+        expect(results[i]._id).to.match(/^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/);
+        expect(results[i].label).to.match(/^Tag[0-9]{1,}$/);
+      }
     })
-
   })
 
   describe("findById", function() {
-    it('ShouldFindParticularEntity_WhenOthersPresented', function() {
-
-      let storedItems: TagRecord[] = [];
+    it('ShouldFindParticularEntity_WhenOthersPresented', async () => {
+      let promises: Promise<TagRecord>[] = [];
       for (let i = 0; i < 10; i++) {
-        rep.save(new TagRecord("Tag" + i), function(newDoc: TagRecord) {
-          storedItems.push(newDoc);
-        });
+        promises.push(rep.save(new TagRecord("Tag" + i)));
       }
+      let storedItems = await Promise.all(promises);
 
-      //This code snippet waits until array will be filled out
-      let repLocal = rep; //setInterval can't see variable that declared outside this block (neither let nor var). So need to redeclare it in nearest variable
-      let timeout = setInterval(function() {
-        if (storedItems.length == 10) {
-          clearInterval(timeout);
-          repLocal.findById(storedItems[2]._id, function(docs: TagRecord[]) {
-            expect(docs.length).equal(1);
-            expect(docs[0]._id).equal(storedItems[2]._id);
-            expect(docs[0].label).equal(storedItems[2].label);
-          });
-        }
-      }, 100)
+      let docs = await rep.findById(storedItems[2]._id);
+
+      expect(docs).to.have.length(1);
+      expect(docs[0]._id).to.equal(storedItems[2]._id);
+      expect(docs[0].label).to.equal(storedItems[2].label);
     })
   })
 
   describe("findByQuery", function() {
-    beforeEach(() => {
-      rep.save(new TagRecord("One tag"), function(newDoc: TagRecord) { });
-      rep.save(new TagRecord(""), function(newDoc: TagRecord) { });
-      rep.save(new TagRecord("Another tag"), function(newDoc: TagRecord) { });
-      rep.save(new TagRecord("Another tag2"), function(newDoc: TagRecord) { });
+    beforeEach(async () => {
+      await Promise.all([
+        rep.save(new TagRecord("One tag")),
+        rep.save(new TagRecord("")),
+        rep.save(new TagRecord("Another tag")),
+        rep.save(new TagRecord("Another tag2"))
+      ]);
     })
 
-    it('ShouldFindTagByStrictEquality_WhenOthersPresented', function() {
-
-      rep.findByQuery({ label: "Another tag" }, function(docs: TagRecord[]) {
-        expect(docs.length).equal(1);
-        expect(docs[0].label).is.equal("Another tag");
-      });
-
+    it('ShouldFindTagByStrictEquality_WhenOthersPresented', async () => {
+      let docs = await rep.findByQuery({ label: "Another tag" });
+      expect(docs).to.have.length(1);
+      expect(docs[0].label).to.equal("Another tag");
     })
 
-    it('ShouldFindTagByEmptyString_WhenOthersPresented', function() {
-
-      rep.findByQuery({ label: "" }, function(docs: TagRecord[]) {
-        expect(docs.length).equal(1);
-        expect(docs[0].label).is.equal("");
-      });
-
+    it('ShouldFindTagByEmptyString_WhenOthersPresented', async () => {
+      let docs = await rep.findByQuery({ label: "" });
+      expect(docs).to.have.length(1);
+      expect(docs[0].label).to.equal("");
     })
 
-    it('ShouldFindTagByRegexp_WhenOthersPresented', function() {
+    it('ShouldFindTagByRegexp_WhenOthersPresented', async () => {
 
-      rep.findByQuery({ label: /^Another.*/ }, function(docs: TagRecord[]) {
-        expect(docs.length).equal(2);
-        expect(docs.map(rec => { return rec.label })).to.have.members(["Another tag", "Another tag2"]);
-      });
+      let regexp1 = await rep.findByQuery({ label: /^Another.*/ });
+      expect(regexp1).to.have.length(2);
+      expect(regexp1.map(rec => { return rec.label })).to.have.members(["Another tag", "Another tag2"]);
 
-      rep.findByQuery({ label: /^.*tag.*$/ }, function(docs: TagRecord[]) {
-        expect(docs.length).equal(3);
-        expect(docs.map(rec => { return rec.label })).to.have.members(["One tag", "Another tag", "Another tag2"]);
-      });
+      let regexp2 = await rep.findByQuery({ label: /^.*tag.*$/ });
+      expect(regexp2).to.have.length(3);
+      expect(regexp2.map(rec => { return rec.label })).to.have.members(["One tag", "Another tag", "Another tag2"]);
 
-      rep.findByQuery({ label: /^(Another|One) tag$/ }, function(docs: TagRecord[]) {
-        expect(docs.length).equal(2);
-        expect(docs.map(rec => { return rec.label })).to.have.members(["One tag", "Another tag"]);
-      });
+      let regexp3 = await rep.findByQuery({ label: /^(Another|One) tag$/ });
+      expect(regexp3).to.have.length(2);
+      expect(regexp3.map(rec => { return rec.label })).to.have.members(["One tag", "Another tag"]);
     })
   })
 
