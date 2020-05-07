@@ -81,19 +81,19 @@ export class RepositoryImpl<T extends Id> implements Repository<T> {
   }
 }
 
-interface Repository<T extends Id> {
+export interface Repository<T extends Id> {
 
   save(entity: T): Promise<T>;
 
-  updateById(id: string, newFields: any, options: any): Promise<number>;
+  updateById(id: string, newFields: any, options?: any): Promise<number>;
 
-  findById(id: string, options: SortPagination): Promise<T[]>;
+  findById(id: string, options?: SortPagination): Promise<T[]>;
 
-  findAll(options: SortPagination): Promise<T[]>;
+  findAll(options?: SortPagination): Promise<T[]>;
 
-  findByQuery(query: any, options: SortPagination): Promise<T[]>;
+  findByQuery(query: any, options?: SortPagination): Promise<T[]>;
 
-  findByQueryProjection(query: any, projection: any, sortPagination: SortPagination): Promise<any[]>;
+  findByQueryProjection(query: any, projection: any, sortPagination?: SortPagination): Promise<any[]>;
 }
 
 export class SortPagination {

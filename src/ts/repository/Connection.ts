@@ -1,8 +1,6 @@
-import * as fs from "fs";
-import * as path from "path";
-import * as os from "os";
-
-const homeDir: string = os.homedir();
+import { existsSync, mkdirSync } from "fs";
+import { join } from "path";
+import { homedir } from 'os';
 
 /**
  * class ConnectionImpl
@@ -19,7 +17,7 @@ const homeDir: string = os.homedir();
 export class ConnectionImpl implements Connection {
 
   private db: any;
-  private dbFolder: string;
+  private dbFileFilePath: string;
 
   static getConnectionPersisted(
     dbFolderName: string,
@@ -37,39 +35,42 @@ export class ConnectionImpl implements Connection {
     private inMemoryOnly: boolean = false
   ) { }
 
-  connect(): string {
+  connect() {
     if (!(this.db)) {
-      var dbFolder: string;
+      var filePath: string;
       var options: any;
       if (!(this.inMemoryOnly)) {
-        dbFolder = this.ensureDatabaseFile(homeDir, this.dbFolderName);
-        options = { filename: path.join(dbFolder, this.dbFileName) }
+        filePath = join(this.ensureDatabaseFile(homedir(), this.dbFolderName), this.dbFileName);
+        options = { filename: filePath }
       } else {
         options = { inMemoryOnly: this.inMemoryOnly };
       }
       var Datastore = require('nedb');
       this.db = new Datastore(options);
       this.db.loadDatabase();
-      this.dbFolder = dbFolder;
+      this.dbFileFilePath = filePath;
     }
-    return this.dbFolder;
   }
 
   getDb(): any {
     return this.db;
   }
 
+  getDbFileFilePath(): string {
+    return this.dbFileFilePath;
+  }
+
   private ensureDatabaseFile(homeDir: string, dbName: string): string {
-    var dbFolder = path.join(homeDir, dbName);
-    if (!fs.existsSync(dbFolder)) {
-      fs.mkdirSync(dbFolder);
+    var dbFolder = join(homeDir, dbName);
+    if (!existsSync(dbFolder)) {
+      mkdirSync(dbFolder);
     }
     return dbFolder
   }
 }
 
 export interface Connection {
-
-  connect(): string;
+  connect(): void;
   getDb(): any;
+  getDbFileFilePath(): string;
 }
